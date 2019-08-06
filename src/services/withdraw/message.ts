@@ -133,7 +133,7 @@ export class BlockedWithdrawalRequestMessage extends AbstractTransactionMessage 
 
 export class ApprovedWithdrawalRequestMessage extends AbstractTransactionMessage {
     STATUS: string = 'Approved';
-    NOTE: string = 'Your fund willbe sent to receive address soon.';
+    NOTE: string = 'Your fund will be sent to receive address soon.';
 
     get verb(): string {
         return 'withdraw.approved';
