@@ -25,7 +25,7 @@ export const register = async (request: any, h: any) => {
         const agenda = request.server.plugins['c2c-agenda']['agenda'];
 
         const user = await userService.register(payload, agenda);
-        return h.response({ 'data': await new UserSerializer().serialize(user) }).code(201);
+        return h.response({'data': await new UserSerializer().serialize(user)}).code(201);
     } catch (err) {
         request.log(['user.register', 'error'], err.message);
         throw utils.error.badRequest(err);
@@ -37,7 +37,7 @@ export const me = async (request: any, h: any) => {
     try {
         const user = request.auth.credentials;
         const data = await new UserProfileSerializer().serialize(user);
-        return h.response({ data: data }).code(200);
+        return h.response({data: data}).code(200);
     } catch (err) {
         request.log(['user.me', 'error'], err.message);
         throw utils.error.badRequest(err);
@@ -49,7 +49,7 @@ export const emailExists = async (request: any, h: any) => {
     let params = request.query;
     try {
         let exists = await userService.emailExists(params.email);
-        return h.response({ data: { 'exists': exists } });
+        return h.response({data: {'exists': exists}});
     } catch (err) {
         request.log(['user.emailExists', 'error'], err.message);
         throw utils.error.badRequest(err);
@@ -60,7 +60,7 @@ export const walletExists = async (request: any, h: any) => {
     let params = request.query;
     try {
         let exists = await userService.walletExists(params.wallet);
-        return h.response({ data: { 'exists': exists } });
+        return h.response({data: {'exists': exists}});
     } catch (err) {
         request.log(['user.walletExists', 'error'], err.message);
         throw utils.error.badRequest(err);
@@ -71,7 +71,7 @@ export const getUserWallets = async (request: any, h: any) => {
     try {
         const user = request.auth.credentials;
         const wallets = await walletService.getUserWallets(user);
-        return h.response({ 'data': await new WalletSerializer(user).serialize([wallets], true) }).code(200);
+        return h.response({'data': await new WalletSerializer(user).serialize([wallets], true)}).code(200);
     } catch (err) {
         request.log(['user.wallets', 'error'], err.message);
         throw utils.error.badRequest(err);
@@ -115,7 +115,7 @@ export const changePasswordWithToken = async (request: any, h: any) => {
 };
 
 export const changePassword = async (request: any, h: any) => {
-    const { old_password, new_password } = request.payload;
+    const {old_password, new_password} = request.payload;
     const user = request.auth.credentials;
     try {
         request.log(['user.changePassword', 'info'], request.payload);
@@ -133,7 +133,7 @@ export const verifyPassword = async (request: any, h: any) => {
     try {
         const result = await authService.verifyPassword(user.email, password);
         request.log(['user.verifyPassword', 'info'], result);
-        return h.response({ 'data': { 'status': result } }).code(200);
+        return h.response({'data': {'status': result}}).code(200);
     } catch (err) {
         request.log(['user.verifyPassword', 'error'], err.message);
         throw utils.error.badRequest(err);
@@ -141,11 +141,11 @@ export const verifyPassword = async (request: any, h: any) => {
 };
 
 export const resendActivation = async (request: any, h: any) => {
-    const { email } = request.payload;
+    const {email} = request.payload;
     try {
         const result = await userService.resendActivation(email);
         request.log(['user.resendActivation', 'info'], result);
-        return h.response({ 'data': { 'status': result } }).code(200);
+        return h.response({'data': {'status': result}}).code(200);
     } catch (err) {
         request.log(['user.resendActivation', 'error'], err.message);
         throw utils.error.badRequest(err);
@@ -159,7 +159,7 @@ export const activateUser = async (request: any, h: any) => {
         // return h.view('404');
         return h.view('expired-link');
     }
-    const user = await User.findOne({ activation_code: code, status: USER_STATUS.PRE_ACTIVE });
+    const user = await User.findOne({activation_code: code, status: USER_STATUS.PRE_ACTIVE});
     if (!user) {
         // return h.view('404');
         return h.view('expired-link');
@@ -181,7 +181,7 @@ export const existsBuyer = async (request: any, h: any) => {
     const address = request.query.address;
     try {
         const result = await userService.existsBuyer(address);
-        return h.response({ 'data': { 'status': result } }).code(200);
+        return h.response({'data': {'status': result}}).code(200);
     } catch (err) {
         throw utils.error.badRequest(err);
     }
@@ -193,7 +193,7 @@ export const updateWallet = async (request: any, h: any) => {
         const auth = request.auth.credentials;
 
         // Find current user
-        let user = await User.findOne({ _id: auth.id });
+        let user = await User.findOne({_id: auth.id});
         if (user === null) {
             return h.view('404');
         }
@@ -205,7 +205,7 @@ export const updateWallet = async (request: any, h: any) => {
         // First Login
         if (!user.neo_wallet) {
             // Check Neo address
-            if (await User.findOne({ "neo_wallet": payload.neo_wallet })) {
+            if (await User.findOne({"neo_wallet": payload.neo_wallet})) {
                 throw new Errors.AddressExistsError();
             }
 
@@ -224,7 +224,7 @@ export const updateWallet = async (request: any, h: any) => {
         user.neo_wallet = payload.neo_wallet;
         await user.save();
 
-        return h.response({ data: await new UserProfileSerializer().serialize(user) }).code(200);
+        return h.response({data: await new UserProfileSerializer().serialize(user)}).code(200);
     } catch (err) {
         request.log(['user.update', 'error'], err.message);
         throw utils.error.badRequest(err);
@@ -235,7 +235,7 @@ export const getCryptoWallets = async (request: any, h: any) => {
     try {
         const auth = request.auth.credentials;
         // Find current user
-        const user = await User.findOne({ _id: auth.id });
+        const user = await User.findOne({_id: auth.id});
         const data = await new CryptoWalletSerializer().serialize(user.crypto_currencies, true);
         return h.response({data});
     } catch (error) {
@@ -246,17 +246,17 @@ export const getCryptoWallets = async (request: any, h: any) => {
 
 export const updateCrytoWallets = async (request: any, h: any) => {
     try {
-        const { wallets } = request.payload;
+        const {wallets} = request.payload;
         const auth = request.auth.credentials;
-        let user = await User.findOne({ _id: auth.id });
+        let user = await User.findOne({_id: auth.id});
 
         // Get New/Rem wallet
-		const newWallets = wallets.filter(w => !user.crypto_currencies.find(f => f.address === w.address));
+        const newWallets = wallets.filter(w => !user.crypto_currencies.find(f => f.address === w.address));
         const delWallets = user.crypto_currencies.filter(w => !wallets.find(f => f.address === w.address));
 
         // find address duplication
-        const addresses = newWallets.map(({ address }) => address);
-        const addressDuplcated = await User.find({ 'crypto_currencies.address' : { $in: addresses } });
+        const addresses = newWallets.map(({address}) => address);
+        const addressDuplcated = await User.find({'crypto_currencies.address': {$in: addresses}});
         if (addressDuplcated.length !== 0) {
             throw new Errors.DuplicatedAddress();
         }
@@ -272,7 +272,7 @@ export const updateCrytoWallets = async (request: any, h: any) => {
         // Find current user
         user.crypto_currencies = wallets;
         user = await user.save();
-        const data =  await new CryptoWalletSerializer().serialize(user.crypto_currencies, true);
+        const data = await new CryptoWalletSerializer().serialize(user.crypto_currencies, true);
         return h.response({data});
     } catch (error) {
         request.log(['user.updateCrytoWallets', 'error'], error.message);
@@ -289,6 +289,27 @@ export const wallets = async (request: any, h: any) => {
     } catch (error) {
         request.log(['user.getWallets', 'error'], error.message);
         throw utils.error.badRequest(error);
+    }
+};
+
+export const findAvailableInfinitoWallets = async (request: any, h: any) => {
+    try {
+        let data = [];
+        const infiWallets = request.payload.infiWallets;
+        const infiWalletsAddress = infiWallets.map(element => element.address);
+        let registeredInfinitoWallets = [];
+        const cryptoCurrencyArr = await User.find({'crypto_currencies.address': {$in: infiWalletsAddress}}, {'crypto_currencies.address': 1});
+        for (let i = 0; i < cryptoCurrencyArr.length; i++) {
+            let cryptoCurrenciesAddressArr = cryptoCurrencyArr[i].crypto_currencies;
+            for (let j = 0; j < cryptoCurrenciesAddressArr.length; j++) {
+                registeredInfinitoWallets.push(cryptoCurrenciesAddressArr[j].address);
+            }
+        }
+        data = infiWallets.filter(infiWallet => registeredInfinitoWallets.includes(infiWallet.address) == false);
+        return h.response({data}).code(200);
+    } catch (e) {
+        request.log(['user.findAvailableInfinitoWallets', 'error'], e.message);
+        throw utils.error.badRequest(e);
     }
 };
 
@@ -309,5 +330,6 @@ export default {
     existsBuyer,
     updateWallet,
     getCryptoWallets,
+    findAvailableInfinitoWallets,
     updateCrytoWallets
 };
