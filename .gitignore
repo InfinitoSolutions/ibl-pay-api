@@ -1,0 +1,17 @@
+node_modules
+local.yml
+yarn.lock
+.env
+coverage.html
+.vscode
+.sc
+dist
+upload/*
+/package-lock.json
+/dump.rdb
+/.env.dev
+/.env.local
+/.env.test1
+/.env.test2
+/.env.test3
+/package.js

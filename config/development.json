@@ -1,0 +1,8 @@
+{
+    "server": {
+        "neo": {
+            "network": "PrivateNet"
+        }
+    },
+    "captchaEnabled": true
+}
