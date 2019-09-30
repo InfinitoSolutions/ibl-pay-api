@@ -71,7 +71,12 @@ export const getUserWallets = async (request: any, h: any) => {
     try {
         const user = request.auth.credentials;
         const wallets = await walletService.getUserWallets(user);
-        return h.response({'data': await new WalletSerializer(user).serialize([wallets], true)}).code(200);
+        let listWallet = [];
+        for (let i = 0; i < wallets.length; i ++) {
+            const serializeWallet = await new WalletSerializer(user).serialize([wallets[i]], true);
+            listWallet.push(...serializeWallet);
+        }
+        return h.response({'data': listWallet }).code(200);
     } catch (err) {
         request.log(['user.wallets', 'error'], err.message);
         throw utils.error.badRequest(err);
@@ -305,7 +310,7 @@ export const findAvailableInfinitoWallets = async (request: any, h: any) => {
                 registeredInfinitoWallets.push(cryptoCurrenciesAddressArr[j].address);
             }
         }
-        data = infiWallets.filter(infiWallet => registeredInfinitoWallets.includes(infiWallet.address) == false);
+        data = infiWallets.filter(infiWallet => registeredInfinitoWallets.includes(infiWallet.address) === false);
         return h.response({data}).code(200);
     } catch (e) {
         request.log(['user.findAvailableInfinitoWallets', 'error'], e.message);

@@ -1,11 +1,13 @@
 import Wallet from '@models/wallet.model';
 import Currency from '@models/currency.model';
 import User from '@models/user.model';
+import { filter } from 'lodash';
 
 import NeoApi from '@services/neo/api';
 import { Balance } from '@utils/balance';
 import { IUser } from '@models/user.model';
-import { createNeoWallet } from '@services/user';
+import { createNeoWallet, createInfinitoTokenWallet } from '@services/user';
+import { wallet } from '@cityofzion/neon-js';
 
 /**
  * Get NEP5_NEO Wallets
@@ -14,27 +16,35 @@ import { createNeoWallet } from '@services/user';
  */
 export const getUserWallets = async (user: IUser) => {
     const address = user.neo_wallet;
-    let wallet: any = await Wallet.findOne({ user_id: user._id, currency: 'BTC' });
-    if (!wallet) {
-        wallet = await createNeoWallet(user);
+    let wallets: any = await Wallet.find({ user_id: user._id });
+    if (!wallets) {
+        wallets = await createNeoWallet(user);
     }
-    let data = wallet.toJSON();
+
+    const filterToken = filter(wallets, item => item.currency === 'INFT');
+    if (!filterToken) {
+        wallets = await createInfinitoTokenWallet(user);
+    }
     try {
-        let balance = 0;
-        if (address) {
-            balance = await NeoApi.getBalance(address);
-        }
-        data['balance'] = balance;
-        const currency = await Currency.findOne({ currency: wallet.currency });
-        if (currency) {
-            data['usd'] = parseFloat((balance * currency.usd).toFixed(2));
-        }
-        // Save wallet
-        wallet.balance = balance;
-        wallet.available = balance;
-        wallet.save();
-    } catch (e) { }
-    return data;
+        for (let i = 0; i < wallets.length; i++) {
+            let data = wallets[i].toJSON();
+                let balance = 0;
+                if (address) {
+                    balance = await NeoApi.getBalance(address, data.currency);
+                }
+                const currency = await Currency.findOne({ currency: data.currency });
+                if (currency) {
+                    data['usd'] = parseFloat((balance * currency.usd).toFixed(2));
+                }
+                // Save wallet
+                wallets[i].balance = balance;
+                wallets[i].available = balance;
+                wallets[i].save();
+            }
+    } catch (e) {
+        console.log(e);
+    }
+    return wallets;
 };
 
 export const debitToWallet = async (userId: string, currency: string, amount: number) => {

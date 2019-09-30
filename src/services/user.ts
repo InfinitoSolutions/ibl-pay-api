@@ -17,7 +17,6 @@ import jwt from 'jsonwebtoken';
 import {verifyPassword} from '@services/auth';
 
 const INITIAL_WALLET_BALANCE = 0;
-const DEFAULT_CURRENCY = 'BTC';
 const SECRET = 'c2c-secret-key';
 
 
@@ -27,12 +26,32 @@ const SECRET = 'c2c-secret-key';
  */
 export const createNeoWallet = async (user: any) => {
     try {
-        let wallet = new Wallet({
+        let walletBtc = new Wallet({
             user_id: user._id,
-            currency: DEFAULT_CURRENCY,
+            currency: 'BTC',
             balance: INITIAL_WALLET_BALANCE
         });
-        return await wallet.save();
+        let walletEth = new Wallet({
+            user_id: user._id,
+            currency: 'INFT',
+            balance: INITIAL_WALLET_BALANCE
+        });
+        await walletBtc.save();
+        await walletEth.save();
+    } catch (e) {
+        debug(e);
+        throw e;
+    }
+};
+
+export const createInfinitoTokenWallet = async (user: any) => {
+    try {
+        let walletEth = new Wallet({
+            user_id: user._id,
+            currency: 'INFT',
+            balance: INITIAL_WALLET_BALANCE
+        });
+        await walletEth.save();
     } catch (e) {
         debug(e);
         throw e;
