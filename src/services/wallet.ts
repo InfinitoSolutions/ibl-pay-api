@@ -6,7 +6,7 @@ import { filter } from 'lodash';
 import NeoApi from '@services/neo/api';
 import { Balance } from '@utils/balance';
 import { IUser } from '@models/user.model';
-import { createNeoWallet, createInfinitoTokenWallet } from '@services/user';
+import { createWallet, createInfinitoTokenWallet } from '@services/user';
 import { wallet } from '@cityofzion/neon-js';
 
 /**
@@ -18,7 +18,7 @@ export const getUserWallets = async (user: IUser) => {
     const address = user.neo_wallet;
     let wallets: any = await Wallet.find({ user_id: user._id });
     if (!wallets) {
-        wallets = await createNeoWallet(user);
+        wallets = await createWallet(user);
     }
 
     const filterToken = filter(wallets, item => item.currency === 'INFT');
@@ -30,7 +30,7 @@ export const getUserWallets = async (user: IUser) => {
             let data = wallets[i].toJSON();
                 let balance = 0;
                 if (address) {
-                    balance = await NeoApi.getBalance(address, data.currency);
+                    balance = await NeoApi.getBalance(address, data.currency.toLowerCase());
                 }
                 const currency = await Currency.findOne({ currency: data.currency });
                 if (currency) {

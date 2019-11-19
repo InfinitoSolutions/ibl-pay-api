@@ -24,7 +24,7 @@ const SECRET = 'c2c-secret-key';
  * @todo: Wallet should be created on Mobile
  * @param {User} user
  */
-export const createNeoWallet = async (user: any) => {
+export const createWallet = async (user: any) => {
     try {
         let walletBtc = new Wallet({
             user_id: user._id,
@@ -97,7 +97,7 @@ export const register = async (payload: any, agenda: any) => {
         let u = await user.save();
 
         // Create wallet
-        await createNeoWallet(u);
+        await createWallet(u);
 
         // Send welcome mail
         sendWelcomeMail(user);
@@ -268,7 +268,7 @@ export default {
     register,
     emailExists,
     walletExists,
-    createNeoWallet,
+    createWallet,
     forgotPassword,
     changePassword,
     verifyTokenResetPassword,
