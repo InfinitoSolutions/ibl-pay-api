@@ -33,7 +33,7 @@
     "@cityofzion/neon-js": "^3.11.9",
     "agenda": "^2.0.0",
     "amqplib": "^0.5.3",
-    "bcrypt": "^3.0.0",
+    "bcrypt": "^5.0.0",
     "bluebird": "^3.5.3",
     "bull": "^3.5.2",
     "code": "^5.2.0",
